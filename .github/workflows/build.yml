@@ -40,6 +40,13 @@ jobs:
           yes | sdkmanager --licenses || true
           sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
 
+      - name: Find and link AIDL
+        run: |
+          AIDL_PATH=$(find $HOME/android-sdk -name aidl | head -1)
+          echo "Found AIDL: $AIDL_PATH"
+          sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
+          aidl --version
+
       - name: Build APK
         run: |
           sed -i '/android.sdk_path/d' buildozer.spec
