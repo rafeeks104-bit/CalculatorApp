@@ -50,12 +50,11 @@ jobs:
       - name: Clean Buildozer
         run: |
           rm -rf ~/.buildozer
+          mkdir -p ~/.buildozer/android/platform
+          ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
 
       - name: Build APK
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "build-tools;35.0.0" "platforms;android-35"
-
           sed -i '/android.sdk_path/d' buildozer.spec
           sed -i '/android.ndk_path/d' buildozer.spec
           sed -i '/android.build_tools_version/d' buildozer.spec
