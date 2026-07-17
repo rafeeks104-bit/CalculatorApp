@@ -47,6 +47,10 @@ jobs:
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
           which aidl
 
+      - name: Clean Buildozer
+        run: |
+          rm -rf ~/.buildozer
+
       - name: Build APK
         run: |
           yes | sdkmanager --licenses || true
@@ -57,6 +61,7 @@ jobs:
           sed -i '/android.build_tools_version/d' buildozer.spec
 
           echo "android.sdk_path = $ANDROIDSDK" >> buildozer.spec
+          echo "android.build_tools_version = 35.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
           buildozer android debug
