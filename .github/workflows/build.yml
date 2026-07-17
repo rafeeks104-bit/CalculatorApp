@@ -19,29 +19,21 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk
+          sudo apt install -y git zip unzip openjdk-17-jdk android-sdk android-sdk-platform-tools
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
 
       - name: Setup Android SDK path
         run: |
-          mkdir -p $HOME/android-sdk
-          mkdir -p $HOME/android-ndk
-          chmod -R 777 $HOME/android-sdk
-          chmod -R 777 $HOME/android-ndk
-          echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
+          echo "ANDROIDSDK=/usr/lib/android-sdk" >> $GITHUB_ENV
           echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
-
-      - name: Install Android SDK tools
-        run: |
-          yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
 
       - name: Build APK
         run: |
           sed -i '/android.sdk_path/d' buildozer.spec
           sed -i '/android.ndk_path/d' buildozer.spec
-          echo "android.sdk_path = $HOME/android-sdk" >> buildozer.spec
+          echo "android.sdk_path = /usr/lib/android-sdk" >> buildozer.spec
           echo "android.ndk_path = $HOME/android-ndk" >> buildozer.spec
           buildozer android debug
 
