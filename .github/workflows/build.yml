@@ -26,13 +26,14 @@ jobs:
       - name: Setup Android SDK path
         run: |
           mkdir -p $HOME/android-sdk
+          mkdir -p $HOME/android-ndk
           chmod -R 777 $HOME/android-sdk
+          chmod -R 777 $HOME/android-ndk
           echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
 
       - name: Build APK
         run: |
-          export ANDROIDSDK=$HOME/android-sdk
-          export ANDROIDNDK=$HOME/android-ndk
           buildozer android debug
 
       - name: Upload APK
