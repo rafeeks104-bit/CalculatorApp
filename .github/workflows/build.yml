@@ -54,6 +54,7 @@ jobs:
           rm -rf ~/.buildozer/android/platform/android-sdk
           mkdir -p ~/.buildozer/android/platform
           ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
+          export PATH=$ANDROIDSDK/cmdline-tools/latest/bin:$PATH
           ls -l ~/.buildozer/android/platform/android-sdk
 
       - name: Build APK
@@ -63,10 +64,14 @@ jobs:
           sed -i '/android.build_tools_version/d' buildozer.spec
 
           echo "android.sdk_path = $ANDROIDSDK" >> buildozer.spec
+          echo "android.ndk_path = $HOME/.buildozer/android/platform/android-ndk-r28c" >> buildozer.spec
           echo "android.build_tools_version = 35.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
-          yes | sdkmanager --licenses || true
+          export PATH=$ANDROIDSDK/cmdline-tools/latest/bin:$PATH
+
+          rm -rf ~/.buildozer/android/platform/android-sdk
+          ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
 
           buildozer android debug
 
