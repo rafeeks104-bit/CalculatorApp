@@ -45,7 +45,7 @@ jobs:
           AIDL_PATH=$(find $HOME/android-sdk -name aidl | head -1)
           echo "Found AIDL: $AIDL_PATH"
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
-          aidl --version
+          which aidl
 
       - name: Build APK
         run: |
