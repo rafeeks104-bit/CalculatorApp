@@ -32,13 +32,12 @@ jobs:
           echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
 
-      - name: Configure Buildozer paths
-        run: |
-          echo "android.sdk_path = $HOME/android-sdk" >> buildozer.spec
-          echo "android.ndk_path = $HOME/android-ndk" >> buildozer.spec
-
       - name: Build APK
         run: |
+          sed -i '/android.sdk_path/d' buildozer.spec
+          sed -i '/android.ndk_path/d' buildozer.spec
+          echo "android.sdk_path = $HOME/android-sdk" >> buildozer.spec
+          echo "android.ndk_path = $HOME/android-ndk" >> buildozer.spec
           buildozer android debug
 
       - name: Upload APK
