@@ -31,6 +31,8 @@ jobs:
 
       - name: Build APK
         run: |
+          export ANDROIDSDK=$HOME/android-sdk
+          export ANDROIDNDK=$HOME/android-ndk
           buildozer android debug
 
       - name: Upload APK
