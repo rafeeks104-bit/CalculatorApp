@@ -31,6 +31,7 @@ jobs:
           unzip -q commandlinetools-linux-11076708_latest.zip
           mkdir -p cmdline-tools/latest
           mv cmdline-tools/* cmdline-tools/latest/ || true
+
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
           echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
@@ -38,7 +39,7 @@ jobs:
       - name: Install Android tools
         run: |
           yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
+          sdkmanager --sdk_root=$ANDROIDSDK "platform-tools" "build-tools;35.0.0" "platforms;android-35"
 
       - name: Find and link AIDL
         run: |
@@ -50,8 +51,8 @@ jobs:
       - name: Prepare Buildozer SDK
         run: |
           rm -rf ~/.buildozer
-          mkdir -p ~/.buildozer/android/platform/android-sdk
-          cp -r $ANDROIDSDK/* ~/.buildozer/android/platform/android-sdk/
+          mkdir -p ~/.buildozer/android/platform
+          ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
 
       - name: Build APK
         run: |
