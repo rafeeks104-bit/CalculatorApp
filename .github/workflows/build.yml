@@ -29,6 +29,7 @@ jobs:
           cd $HOME/android-sdk
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip -q commandlinetools-linux-11076708_latest.zip
+
           mkdir -p cmdline-tools/latest
           mv cmdline-tools/* cmdline-tools/latest/ || true
 
@@ -48,11 +49,12 @@ jobs:
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
           which aidl
 
-      - name: Prepare Buildozer SDK
+      - name: Fix Buildozer SDK path
         run: |
-          rm -rf ~/.buildozer
+          rm -rf ~/.buildozer/android/platform/android-sdk
           mkdir -p ~/.buildozer/android/platform
           ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
+          ls -l ~/.buildozer/android/platform/android-sdk
 
       - name: Build APK
         run: |
@@ -60,7 +62,7 @@ jobs:
           sed -i '/android.ndk_path/d' buildozer.spec
           sed -i '/android.build_tools_version/d' buildozer.spec
 
-          echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> buildozer.spec
+          echo "android.sdk_path = $ANDROIDSDK" >> buildozer.spec
           echo "android.build_tools_version = 35.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
