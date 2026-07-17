@@ -19,31 +19,32 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk android-sdk android-sdk-platform-tools android-sdk-build-tools
+          sudo apt install -y git zip unzip openjdk-17-jdk wget
           pip install --upgrade pip
           pip install buildozer cython==0.29.37
 
-      - name: Setup Android SDK path
+      - name: Setup Android SDK
         run: |
-          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-          echo "ANDROIDSDK=/usr/lib/android-sdk" >> $GITHUB_ENV
-          echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
+          mkdir -p $HOME/android-sdk/cmdline-tools
+          cd $HOME/android-sdk
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q commandlinetools-linux-11076708_latest.zip
+          mkdir -p cmdline-tools/latest
+          mv cmdline-tools/* cmdline-tools/latest/ || true
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$HOME/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
 
-      - name: Find AIDL
+      - name: Install Android tools
         run: |
-          find /usr -name aidl 2>/dev/null || true
-
-      - name: Setup AIDL path
-        run: |
-          AIDL_PATH=$(find /usr -name aidl 2>/dev/null | head -1)
-          echo "AIDL=$AIDL_PATH" >> $GITHUB_ENV
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
 
       - name: Build APK
         run: |
           sed -i '/android.sdk_path/d' buildozer.spec
           sed -i '/android.ndk_path/d' buildozer.spec
-          echo "android.sdk_path = /usr/lib/android-sdk" >> buildozer.spec
-          echo "android.ndk_path = $HOME/android-ndk" >> buildozer.spec
+          echo "android.sdk_path = $HOME/android-sdk" >> buildozer.spec
           buildozer android debug
 
       - name: Upload APK
