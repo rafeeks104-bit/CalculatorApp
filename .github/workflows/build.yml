@@ -49,9 +49,16 @@ jobs:
 
       - name: Build APK
         run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "build-tools;35.0.0" "platforms;android-35"
+
           sed -i '/android.sdk_path/d' buildozer.spec
           sed -i '/android.ndk_path/d' buildozer.spec
-          echo "android.sdk_path = $HOME/android-sdk" >> buildozer.spec
+          sed -i '/android.build_tools_version/d' buildozer.spec
+
+          echo "android.sdk_path = $ANDROIDSDK" >> buildozer.spec
+          echo "android.accept_sdk_license = True" >> buildozer.spec
+
           buildozer android debug
 
       - name: Upload APK
