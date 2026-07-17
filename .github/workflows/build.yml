@@ -29,9 +29,14 @@ jobs:
           echo "ANDROIDSDK=/usr/lib/android-sdk" >> $GITHUB_ENV
           echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
 
-      - name: Check AIDL
+      - name: Find AIDL
         run: |
-          find /usr/lib/android-sdk -name aidl || true
+          find /usr -name aidl 2>/dev/null || true
+
+      - name: Setup AIDL path
+        run: |
+          AIDL_PATH=$(find /usr -name aidl 2>/dev/null | head -1)
+          echo "AIDL=$AIDL_PATH" >> $GITHUB_ENV
 
       - name: Build APK
         run: |
