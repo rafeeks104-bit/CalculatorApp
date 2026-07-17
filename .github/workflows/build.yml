@@ -50,8 +50,8 @@ jobs:
       - name: Clean Buildozer
         run: |
           rm -rf ~/.buildozer
-          mkdir -p ~/.buildozer/android/platform
-          ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
+          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
+          ln -sf $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
 
       - name: Build APK
         run: |
