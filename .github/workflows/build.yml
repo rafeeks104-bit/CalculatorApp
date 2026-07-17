@@ -32,6 +32,11 @@ jobs:
           echo "ANDROIDSDK=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROIDNDK=$HOME/android-ndk" >> $GITHUB_ENV
 
+      - name: Install Android SDK tools
+        run: |
+          yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
+
       - name: Build APK
         run: |
           sed -i '/android.sdk_path/d' buildozer.spec
