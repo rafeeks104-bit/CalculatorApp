@@ -46,6 +46,13 @@ jobs:
           "platforms;android-35" \
           "cmdline-tools;latest"
 
+      - name: Link SDK for Buildozer
+        run: |
+          rm -rf ~/.buildozer
+          mkdir -p ~/.buildozer/android/platform
+          ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
+          ls ~/.buildozer/android/platform/android-sdk/build-tools
+
       - name: Find and link AIDL
         run: |
           AIDL_PATH=$(find $ANDROIDSDK -type f -name aidl | head -1)
@@ -61,7 +68,7 @@ jobs:
 
       - name: Clean Buildozer cache
         run: |
-          rm -rf ~/.buildozer
+          rm -rf ~/.buildozer/android/platform/android-ndk-r28c || true
 
       - name: Build APK
         run: |
@@ -69,7 +76,7 @@ jobs:
           sed -i '/android.ndk_path/d' buildozer.spec
           sed -i '/android.build_tools_version/d' buildozer.spec
 
-          echo "android.sdk_path = $ANDROIDSDK" >> buildozer.spec
+          echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> buildozer.spec
           echo "android.build_tools_version = 35.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
