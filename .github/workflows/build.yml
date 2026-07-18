@@ -40,14 +40,24 @@ jobs:
       - name: Install Android tools
         run: |
           yes | sdkmanager --licenses || true
-          sdkmanager --sdk_root=$ANDROIDSDK "platform-tools" "build-tools;35.0.0" "platforms;android-35"
+          sdkmanager --sdk_root=$ANDROIDSDK \
+          "platform-tools" \
+          "build-tools;35.0.0" \
+          "platforms;android-35" \
+          "cmdline-tools;latest"
 
       - name: Find and link AIDL
         run: |
-          AIDL_PATH=$(find $HOME/android-sdk -name aidl | head -1)
+          AIDL_PATH=$(find $ANDROIDSDK -type f -name aidl | head -1)
           echo "Found AIDL: $AIDL_PATH"
+
+          if [ -z "$AIDL_PATH" ]; then
+            echo "AIDL not found"
+            exit 1
+          fi
+
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
-          which aidl
+          aidl --version
 
       - name: Clean Buildozer cache
         run: |
