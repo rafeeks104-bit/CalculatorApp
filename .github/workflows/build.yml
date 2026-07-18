@@ -57,7 +57,7 @@ jobs:
           fi
 
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
-          aidl --version
+          which aidl
 
       - name: Clean Buildozer cache
         run: |
