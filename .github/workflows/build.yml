@@ -52,7 +52,6 @@ jobs:
           mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
           ln -s $ANDROIDSDK ~/.buildozer/android/platform/android-sdk
           ln -sf $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-          ls ~/.buildozer/android/platform/android-sdk
 
       - name: Find and link AIDL
         run: |
@@ -81,7 +80,17 @@ jobs:
           echo "android.build_tools_version = 35.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
+          mkdir -p ~/.buildozer/android/platform/android-sdk
+
+          rm -rf ~/.buildozer/android/platform/android-sdk/build-tools
+          ln -s $ANDROIDSDK/build-tools ~/.buildozer/android/platform/android-sdk/build-tools
+
+          rm -rf ~/.buildozer/android/platform/android-sdk/platforms
+          ln -s $ANDROIDSDK/platforms ~/.buildozer/android/platform/android-sdk/platforms
+
           export PATH=$ANDROIDSDK/cmdline-tools/latest/bin:$PATH
+
+          yes | sdkmanager --licenses || true
 
           buildozer android debug
 
@@ -90,3 +99,5 @@ jobs:
         with:
           name: CalculatorApp-APK
           path: bin/*.apk
+
+      
