@@ -59,11 +59,25 @@ jobs:
           ln -sf $ANDROIDSDK/cmdline-tools/latest/bin/avdmanager \
           ~/.buildozer/android/platform/android-sdk/tools/bin/avdmanager
 
+      - name: Fix SDK Build Tools
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk
+
+          cp -r $ANDROIDSDK/build-tools ~/.buildozer/android/platform/android-sdk/
+          cp -r $ANDROIDSDK/platforms ~/.buildozer/android/platform/android-sdk/
+
+          find ~/.buildozer/android/platform/android-sdk/build-tools -name aidl -type f
+
       - name: Find AIDL
         run: |
-          AIDL_PATH=$(find $ANDROIDSDK -type f -name aidl | head -1)
+          AIDL_PATH=$(find ~/.buildozer/android/platform/android-sdk -type f -name aidl | head -1)
 
           echo "Found AIDL: $AIDL_PATH"
+
+          if [ -z "$AIDL_PATH" ]; then
+            echo "AIDL not found"
+            exit 1
+          fi
 
           sudo ln -sf $AIDL_PATH /usr/local/bin/aidl
           which aidl
@@ -76,10 +90,13 @@ jobs:
 
           echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> buildozer.spec
           echo "android.build_tools_version = 35.0.0" >> buildozer.spec
+          echo "android.api = 35" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
 
           export ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$ANDROIDSDK/cmdline-tools/latest/bin:$ANDROIDSDK/tools/bin:$PATH
+
+          yes | sdkmanager --licenses || true
 
           buildozer android debug
 
